@@ -3,6 +3,6 @@
   "version": "2.53.9",
   "description": "Barchart HTML5 Streaming Chart",
   "main": "barchart.chart.js",
-  "types": "barchart.chart.d.ts"
+  "types": "barchart.chart.d.ts",
   "license": "UNLICENSED"
 }
