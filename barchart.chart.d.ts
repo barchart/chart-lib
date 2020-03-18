@@ -1,6 +1,5 @@
-declare module "@barchart/chart" {
+declare module "@barchart/chart-lib" {
     import PubSub from "pubsub-js";
-    import Connection from "@barchart/marketdata-api-js/lib/connection/Connection";
 
     type FundamentalType =
         | "AccountsPayable"
@@ -1589,7 +1588,7 @@ declare module "@barchart/chart" {
 
     /** Built-in feed, use if you have a contract with Barchart to use our data. This one _does_ provide streaming data. */
     class MarketDataFeed extends BaseDataFeed {
-        connection?: Connection;
+        connection?: any;
     }
 
     /** A key bootstrapping method to call, once per page: initialized the data feed, which you then use to create charts.
