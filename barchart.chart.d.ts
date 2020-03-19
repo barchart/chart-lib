@@ -1,7 +1,22 @@
 declare module "@barchart/chart-lib" {
     import PubSub from "pubsub-js";
 
-    type FundamentalType =
+    /**
+     * Assists with asynchronous calls, mainly reentrancy (if you call the function multiple times you'll get back the same `Promise` object). Propagates `this` to the `work` function and uses `this` to store temporary state @see asyncStatePropName
+     * @param work A function which performs the actual asynchronous operation.
+     * @param [asyncStatePropName = "asyncReadyWork"] A property which stores the state necessary for this helper, only change if the name conflicts with the object's properties.
+     */
+    export async function asyncReady(work: () => Promise<any>, asyncStatePropName?: string): Promise<any>;
+
+    /**
+     * Tiny helper for the price formatting.
+     * @param price The price to format
+     * @param decimals A number of decimals to use
+     * @returns {string} A price formatted using the comma (`,`) as thousands separator and the dot (`.`) as the decimal separator.
+     */
+    export function formatPriceWithDecimals(price: number, decimals: number): string;
+
+    export type FundamentalType =
         | "AccountsPayable"
         | "AccruedExpenses"
         | "Cash"
@@ -779,7 +794,7 @@ declare module "@barchart/chart-lib" {
     const Topics: ITopics;
 
     enum FeedMode {
-        Unspecified = 1,
+        Unspecified = 0,
         GBE,
         cmdtyView,
     }
@@ -1426,18 +1441,77 @@ declare module "@barchart/chart-lib" {
         cacheMe?: boolean;
     }
 
+    /**
+     * Stores the data to display. This is conceptually a hash table with fields as keys and plain JS arrays as values. All the arrays are of the same length.
+     */
     export class TimeSeriesContainer {
+        /**
+         *
+         * @param fields Fields used in this container. Every container should have at least `Fields.DateTime` and one other field (but we're not validating).
+         */
         constructor(fields: Field[]);
+        /**
+         * Prepend the data from the provided container, based on the values in the `Fields.DateTime` array.
+         * @param container Another container whose values should be combined with this one.
+         */
         prepend(container: TimeSeriesContainer): void;
+        /**
+         * Append the data from the provided container, based on the values in the `Fields.DateTime` array.
+         * @param container Another container whose values should be combined with this one.
+         */
         append(container: TimeSeriesContainer): void;
+        /**
+         * A getter for time values.
+         * @returns The values associated with the field `Fields.DateTime`.
+         */
         getTimeData(): Date[];
+        /**
+         * A getter for values of any field kept by this object.
+         * @param field A field whose values you are looking for.
+         * @returns Array of values for the field.
+         */
         getData(field: Field): FieldValueArray;
+        /**
+         * A setter for any fields' values.
+         * @param field A field whose values you are replacing.
+         * @param data Array of values to set for the field in question.
+         */
         setData(field: Field, data: FieldValueArray): void;
+        /**
+         * Are this field's values stored by this container?
+         * @param field A field you are checking.
+         * @returns `true` if the field is present.
+         */
         hasField(field: Field): boolean;
+        /**
+         * Getter for the container logical size
+         * @returns Length of array of values of the first field in the container. Remember, all fields' values should have the same length.
+         */
         get size(): number;
+        /**
+         * A syntactic sugar for `this.size === 0`
+         * @returns `true` if the container has no data in it.
+         */
         get isEmpty(): boolean;
-        addDataPoint(field: Field, dataPoint: FieldValue);
+        /**
+         * Appends a single value of a field.
+         * @param field A field whose value we're adding.
+         * @param dataPoint A value we're adding.
+         * @return Nothing.
+         */
+        addDataPoint(field: Field, dataPoint: FieldValue): void;
+        /**
+         * Getter for the last (newest in time) value of a field.
+         * @param field A field whose value we're looking for.
+         * @returns Newest value of a given field.
+         */
         getLastDataPoint(field: Field): FieldValue;
+        /**
+         * Setter for the last (newest in time) value of a field.
+         * @param field A field whose value we're looking for.
+         * @param dataPoint A value to use.
+         * @returns Nothing.
+         */
         setLastDataPoint(field: Field, dataPoint: FieldValue): void;
     }
 
@@ -1445,20 +1519,29 @@ declare module "@barchart/chart-lib" {
     export interface ITimeSeries {
         /** Can we load more data or have we loaded everything? The basic assumption is that we are loading data in chunks since there's a lot of data and users are often interested in only the latest data (no need to overload both servers and client machines with data they will never look at.) */
         canLoadMoreData: boolean;
+        /** Are we currently loading the data? */
+        isLoading: boolean;
         /** A container is an instance which actually stores the data. */
         container: TimeSeriesContainer | null;
         /** Do we have any data currently? */
         hasData: boolean;
         /** Called when we should load more data. Happens automatically as the user scroll the chart into the past such that we don't have any more data to show.
-         * @param headChunk If the chunk to load is head or the first. Please note that we consider the head chunk the _last_ one in sequence (or newest in time). Thus when this is false and chunk is loaded it is _prepended_ to the existing data.
-         * @default true
-         * @returns A promise which resolves when the data has been loaded.
+         * @param [headChunk = true] If the chunk to load is head or the first. Please note that we consider the head chunk the _oldest_ one in time (or first in sequence). Thus when this is `true` and chunk is loaded it is _prepended_ to the existing data.
+         * @returns A promise which resolves when the data has been loaded. WHen the data is finished loading, please emit a notification using `PubSub.publish(Topics.TS_MANYCHANGED, { series: this, part: @see ChunkPart})`
          */
         loadMoreData(headChunk?: boolean): Promise<void>;
         /** An initialization of sorts. Typically this is when the first (head) chunk of the data is being loaded (in other words, we load the data eagerly).
+         
          * @returns A promise which resolves with a boolean specifying success or failure.
          */
         ready(): Promise<boolean>;
+    }
+
+    /** Describes the chunk of the timeseries data. If specified, `Head` means older in time (first in a "list" of chunks) and `Tail` means newer in time (last in a "list" of chunks). */
+    export enum ChunkPart {
+        Unspecified = 0,
+        Head,
+        Tail,
     }
 
     export type FieldValueType = "Number" | "String" | "Date";
@@ -1531,7 +1614,7 @@ declare module "@barchart/chart-lib" {
     }
 
     /** Please treat as opaque for now. */
-    interface BaseRecordSource {}
+    export class BaseRecordSource {}
 
     export type FieldValue = number | Date | string | null;
     export type FieldValueArray = number[] | Date[] | string[] | null;
