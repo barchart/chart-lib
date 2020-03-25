@@ -6,7 +6,7 @@ declare module "@barchart/chart-lib" {
      * @param work A function which performs the actual asynchronous operation.
      * @param [asyncStatePropName = "asyncReadyWork"] A property which stores the state necessary for this helper, only change if the name conflicts with the object's properties.
      */
-    export async function asyncReady(work: () => Promise<any>, asyncStatePropName?: string): Promise<any>;
+    export function asyncReady(work: () => Promise<any>, asyncStatePropName?: string): Promise<any>;
 
     /**
      * Tiny helper for the price formatting.
