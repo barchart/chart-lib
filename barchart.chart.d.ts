@@ -998,7 +998,8 @@ declare module "@barchart/chart-lib" {
         | AnnotationAccessor
         | MovePaneAccessor
         | TemplateAccessor
-        | OutlineAccessor;
+        | OutlineAccessor
+        | ThemeAccessor;
 
     export interface MainPlotAccessor {
         id: string;
@@ -1188,6 +1189,18 @@ declare module "@barchart/chart-lib" {
         id: string;
         context: {
             id: string;
+        };
+    }
+
+    export interface ThemeAccessor {
+        id: "Theme";
+        context: {
+            backgroundColor: string;
+            axis: {
+                gridLinesColor: string;
+                textColor: string;
+                crosshairColor: string;
+            };
         };
     }
 
