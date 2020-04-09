@@ -1429,30 +1429,53 @@ declare module "@barchart/chart-lib" {
         fromModel(model: ChartModel): void;
     }
 
-    export type SeriesKind =
-        | "Normal"
-        | "Forward"
-        | "HistoricalForward"
-        | "Study"
-        | "BalanceSheet"
-        | "IncomeStatement"
-        | "Events";
+    export enum SeriesKind {
+        Normal = 0,
+        Forward,
+        HistoricalForward,
+        Study,
+        BalanceSheet,
+        IncomeStatement,
+        Events,
+    }
 
-    /** The definition of the historical data query. Some fields are omitted for clarity. */
-    export interface ITimeSeriesQuery {
+    interface BaseTimeSeriesQuery {
         /** Symbol name to load the data for. */
         symbol: string;
-        /** Aggregation of the data. */
-        aggregation: Aggregation;
-        /** Limit returned data to a given time span. */
-        range?: Range;
-        /** A kind of series we're loading. Used internally, feel free to ignore. Defaults to "Normal". */
+        /** A kind of series we're loading. Please note that this is an enum, so numeric value.
+         * @default SeriesKind.Normal
+         */
         seriesKind?: SeriesKind;
-        /** Should the chart cache the result, used internally, please ignore for now, until we formally define and document the caching mechanism.
+        /** Should the chart cache the result; used _only_ when the data feed supports caching.
          * @default false
          */
         cacheMe?: boolean;
     }
+
+    interface NormalTimeSeriesQuery extends BaseTimeSeriesQuery {
+        /** Aggregation of the data. */
+        aggregation: Aggregation;
+        /** Limit returned data to a given time span. */
+        range?: Range;
+    }
+
+    interface EventsTimeSeriesQuery extends BaseTimeSeriesQuery {
+        /** Should we fetch dividends?
+         * @default false
+         */
+        dividends: boolean;
+        /** Should we fetch earnings?
+         * @default false
+         */
+        earnings: boolean;
+        /** Should we fetch splits?
+         * @default false
+         */
+        splits: boolean;
+    }
+
+    /** The definition of the historical data query. */
+    export type ITimeSeriesQuery = NormalTimeSeriesQuery | EventsTimeSeriesQuery;
 
     /**
      * Stores the data to display. This is conceptually a hash table with fields as keys and plain JS arrays as values. All the arrays are of the same length.
