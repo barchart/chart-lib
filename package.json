@@ -1,6 +1,6 @@
 {
     "name": "@barchart/chart-lib",
-    "version": "2.58.13",
+    "version": "2.59.0",
     "description": "Barchart HTML5 Streaming Chart",
     "main": "barchart.chart.js",
     "types": "barchart.chart.d.ts",
