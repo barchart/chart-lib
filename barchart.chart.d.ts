@@ -721,9 +721,11 @@ declare module "@barchart/chart-lib" {
         CH_CARDPLOTCLICKED: string;
         CH_CARDPLOTREMOVED: string;
         CH_TOOLTIPCHANGED: string;
+        CH_LOGOCLICKED: string;
         CH_SHUTDOWN: string;
         CH_ZOOMCHANGED: string;
         CH_ALL_DATA_PROJECTED: string;
+        CH_API_ACTIONS_RECEIVED: string;
         TS_ALL: string;
         TS_LOADING: string;
         TS_MANYCHANGED: string;
@@ -849,6 +851,7 @@ declare module "@barchart/chart-lib" {
         touchCrosshairTimeoutMillis?: number;
         mode?: FeedMode;
         hostingModel?: HostingModel;
+        logo?: string;
         baseUrl?: BaseUrl;
         overrides?: Overrides;
         fetch?(kind: UrlKind, relativeUrl: string): Promise<string>;
