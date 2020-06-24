@@ -537,7 +537,7 @@ declare module "@barchart/chart-lib" {
         showGoToLatest?: boolean;
         /** The default height (a relative value, @see PaneModel) of panes created by chart (for example, the panes are created for you when you add a standalone study). */
         newPaneHeight?: number;
-        /** Deprecated, please ignore. */
+        /** Will draw a focus point at the value the crosshair is pointing at, if crosshair is visible and the curve style is Line or Area. */
         plotHover?: boolean;
         /** If set to `true`, will display a red bold text `No Data` in the middle of the chart when there is no error but no data was loaded for a given symbol. No default, if not set internally defaults to `true`. */
         showNoDataText?: boolean;
@@ -824,8 +824,20 @@ declare module "@barchart/chart-lib" {
         tickProvider?(options: TickProviderOptions): number[];
     }
 
+    interface SymbologyOverrides {
+        translateSymbol?(symbolName: string): string;
+    }
+
+    type LocaleName = "fr" | undefined;
+
+    interface TimeAxisOverrides {
+        getLocaleName?(): LocaleName;
+    }
+
     interface Overrides {
         yAxis?: PriceAxisOverrides;
+        xAxis?: TimeAxisOverrides;
+        symbology?: SymbologyOverrides;
     }
 
     interface TooltipHeadersConfig {
@@ -1822,12 +1834,20 @@ declare module "@barchart/chart-lib" {
         fill: FillTrait;
     }
 
+    export interface DetachedScale {
+        /** Top scale margin as (mathematical) percentage, defaults to 0.01 (1%) */
+        marginTop?: number;
+        /** Bottom scale margin as (mathematical) percentage, defaults to 0.01 (1%) */
+        marginBottom?: number;
+    }
+
     interface StudyDefaults {
         source?: string;
         inputs?: StudyInput[];
         curves: Curve[];
         levels?: StudyLevel[];
         bands?: StudyBand[];
+        detachedScale?: DetachedScale;
     }
 
     export interface Study {
@@ -1883,6 +1903,7 @@ declare module "@barchart/chart-lib" {
     }
 
     function getTaxonomies(): Taxonomies;
+    function getStudies(): Study[];
 
     type PlotModel =
         | SymbolPlotModel
@@ -2121,6 +2142,16 @@ declare module "@barchart/chart-lib" {
         a: number;
     }
 
+    interface INetwork {
+        isPrivateAddress(host: string): boolean;
+        isRunningLocally(): boolean;
+        getThisDomainName(): string;
+        buildURL(host: string, query: object): string;
+        buildCheckURL(qps1: string?, qps2: string?): string;
+    }
+    // reserved for internal use
+    export const Network: INetwork;
+
     export {
         initFeed,
         getFeed,
@@ -2130,6 +2161,7 @@ declare module "@barchart/chart-lib" {
         parseExpression,
         evaluateExpression,
         getTaxonomies,
+        getStudies,
         Topics,
         PubSub,
     };
