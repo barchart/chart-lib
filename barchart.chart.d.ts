@@ -795,11 +795,7 @@ declare module "@barchart/chart-lib" {
 
     const Topics: ITopics;
 
-    enum FeedMode {
-        Unspecified = 0,
-        GBE,
-        cmdtyView,
-    }
+    type FeedMode = "Unspecified" | "GBE" | "cmdtyView" | "DemoSite";
 
     type BaseUrl = {
         instruments: string;
@@ -861,6 +857,7 @@ declare module "@barchart/chart-lib" {
         tooltipMovement?: TooltipMovement;
         tooltipHeaders?: TooltipHeadersConfig;
         touchCrosshairTimeoutMillis?: number;
+        touchCrosshairDelayMillis?: number;
         mode?: FeedMode;
         hostingModel?: HostingModel;
         logo?: string;
