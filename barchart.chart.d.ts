@@ -864,6 +864,8 @@ declare module "@barchart/chart-lib" {
         baseUrl?: BaseUrl;
         overrides?: Overrides;
         noDataText?: string;
+        credentials?: ICredentials;
+        dataEndpoint?: string;
         fetch?(kind: UrlKind, relativeUrl: string): Promise<string>;
     }
 
