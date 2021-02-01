@@ -795,7 +795,7 @@ declare module "@barchart/chart-lib" {
 
     const Topics: ITopics;
 
-    type FeedMode = "Unspecified" | "GBE" | "cmdtyView" | "DemoSite";
+    export type FeedMode = "Unspecified" | "GBE" | "cmdtyView" | "DemoSite" | "InternalFeed" | "Widget" | "FreeWidget";
 
     type BaseUrl = {
         instruments: string;
@@ -865,7 +865,7 @@ declare module "@barchart/chart-lib" {
         overrides?: Overrides;
         noDataText?: string;
         credentials?: ICredentials;
-        dataEndpoint?: string;
+        apiKey?: string;
         fetch?(kind: UrlKind, relativeUrl: string): Promise<string>;
     }
 

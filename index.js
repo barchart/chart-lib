@@ -182,6 +182,7 @@ class ExampleFeed extends BaseDataFeed {
 }
 const feed = initFeed(ExampleFeed, {
     throttleMillis: 250,
+    apiKey: "<YOUR_API_KEY>",
 });
 
 feed.ready().then(done => {
