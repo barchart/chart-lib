@@ -866,6 +866,7 @@ declare module "@barchart/chart-lib" {
         noDataText?: string;
         credentials?: ICredentials;
         apiKey?: string;
+        documentOrShadowRoot?: DocumentOrShadowRoot
         fetch?(kind: UrlKind, relativeUrl: string): Promise<string>;
     }
 
