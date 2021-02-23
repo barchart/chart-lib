@@ -1410,17 +1410,21 @@ declare module "@barchart/chart-lib" {
 
     export type ScrollBehavior = "wheel" | "wheel+shift" | "none";
 
+    export type RenderTo = string | HTMLElement;
+
     /** Chart accessor is the main API entry point, it essentially _is_ the chart. */
     export class ChartAccessor {
         /** The only parameter for construction is `headless` which if set to `true` will create a chart without any kind of visual representation. This form of a chart is useful for template editors which don't render any content. */
         constructor(headless?: boolean);
         /** This is the id of the HTML element (almost always a `div`) hosting the chart. The chart will _not_ size itself in any way, it will use whatever space was given to the host element and will continue adapting its size to the host element as its size changes. */
         elementId: string;
+        /** The HTML element hosting/wrapping the chart; its id is the @see elementId */
+        hostElement: HTMLElement;
         /** Always up-to-date model of the chart at any given moment. If you need to restore the chart later, take the model and save it somewhere, then @see load the model later. */
         model: ChartModel;
         /** You don't need to call this method, it is called by the @see BaseDataFeed for you when you call the @see addChart method. */
-        initialize(elementId: string, config: ChartConfig): void;
-        /** If you are going to be creating and removing a lot of charts during the host page's lifetime, you should always call the `shutdown` method when you no longer need the chart. Please note that if you are simply going to @see load another chart's definition into the same chart instance, you don't need to call this method. In other words, this method applies if you are tearing down chart completely, and clearing the @see elementId completely. */
+        initialize(renderTo: RenderTo, config: ChartConfig): void;
+        /** If you are going to be creating and removing a lot of charts during the host page's lifetime, you should always call the `shutdown` method when you no longer need the chart. Please note that if you are simply going to @see load another chart's definition into the same chart instance, you don't need to call this method. In other words, this method applies if you are tearing down chart completely, and clearing the @see elementId (and @see hostElement) completely. */
         shutdown(): boolean;
         /** Call this method when you need to place an annotation on the chart. Detailed information can be found in the online documentation. */
         annotate(id: string, traits?: AnnotationTraits, annParam?: any): void;
@@ -1691,20 +1695,20 @@ declare module "@barchart/chart-lib" {
         /** Returns an instance of the "headless" chart, @see ChartAccessor constructor for details.*/
         getHeadlessChart(): ChartAccessor;
         /** Create a chart and place it in the HTML element indicated.
-         * @param elementId The id of the element the chart will be placed into (usually a `div` element)
+         * @param renderTo The id of the element (or the element itself) the chart will be placed into (usually a `div`)
          * @param config The quick way to load a template and set the main plot type (with lots of defaults).
          * @returns @see ChartAccessor
          */
-        addChart(elementId: string, config?: ChartConfig | string): ChartAccessor;
+        addChart(renderTo: RenderTo, config?: ChartConfig | string): ChartAccessor;
         /** When you are completely tearing down the HTML of the chart on a page (assuming the page itself isn't being closed - if it is, nothing to do) you should call this method. If you are simply loading another chart's definition into the existing chart, there is no need to do this.
-         * @param elementId The id of the HTML element the chart was placed into.
+         * @param renderTo The id of the element (or the element itself) the chart was placed into.
          */
-        removeChart(elementId: string): void;
+        removeChart(renderTo: RenderTo): void;
         /** Get the instance of the chart already on the page.
-         * @param elementId The id of the element the chart was placed into.
+         * @param renderTo The id of the element (or the element itself) the chart was placed into.
          * @returns @see ChartAccessor or `null` if none was found
          */
-        getChart(elementId: string): ChartAccessor | null;
+        getChart(renderTo: RenderTo): ChartAccessor | null;
         /** Returns the version of the chart engine. The version is always traced to the JS console on startup. */
         version: string;
         /** The instance producing time series objects. */
