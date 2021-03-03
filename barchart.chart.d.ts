@@ -1724,6 +1724,9 @@ declare module "@barchart/chart-lib" {
     /** Built-in feed, use if you have a contract with Barchart to use our data. This one does not provide any streaming data. */
     class BarchartSiteDataFeed extends BaseDataFeed {}
 
+    /** Built-in feed for mini chart widgets, no streaming data but does cache timeseries data. */
+    class MiniWidgetDataFeed extends BaseDataFeed {}
+    
     /** Built-in feed, use if you have a contract with Barchart to use our data. This one _does_ provide streaming data. */
     class MarketDataFeed extends BaseDataFeed {
         connection?: any;
@@ -2161,6 +2164,7 @@ declare module "@barchart/chart-lib" {
         getChartOutline,
         BarchartSiteDataFeed,
         MarketDataFeed,
+        MiniWidgetDataFeed,
         parseExpression,
         evaluateExpression,
         getTaxonomies,
