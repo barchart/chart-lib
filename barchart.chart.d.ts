@@ -1212,9 +1212,10 @@ declare module "@barchart/chart-lib" {
         context: {
             backgroundColor: string;
             axis: {
-                gridLinesColor: string;
-                textColor: string;
-                crosshairColor: string;
+                gridLinesColor?: string;
+                gridLinesStyle?: DashStyle;
+                textColor?: string;
+                crosshairColor?: string;
             };
         };
     }
