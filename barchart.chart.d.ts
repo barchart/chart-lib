@@ -114,6 +114,18 @@ declare module "@barchart/chart-lib" {
 
     export type StudyFieldId =
         | "MA"
+        | "MA1"
+        | "MA2"
+        | "MA3"
+        | "MA4"
+        | "MA5"
+        | "MA6"
+        | "MA7"
+        | "MA8"
+        | "MA9"
+        | "MA10"
+        | "MAS"
+        | "MAL"
         | "EMA"
         | "MAHI"
         | "MALO"
@@ -298,7 +310,20 @@ declare module "@barchart/chart-lib" {
         | "LEADSP1"
         | "LEADSP2"
         | "LAGGSP"
-        | "VWAP";
+        | "VWAP"
+        | "VWAPSD1U"
+        | "VWAPSD1L"
+        | "VWAPSD2U"
+        | "VWAPSD2L"
+        | "PLVI"
+        | "MNVI"
+        | "DIFA"
+        | "DOSCH"
+        | "DOSCS"
+        | "BOLLSQ"
+        | "TTMSQZON"
+        | "TTMSQZOFF"
+        | "TTMSQZOSC";
 
     export type GeneralFieldId =
         | "DateTime"
@@ -328,6 +353,8 @@ declare module "@barchart/chart-lib" {
 
     export type StudyId =
         | "MA"
+        | "MACDSIG"
+        | "MASIG"
         | "MAEXP"
         | "MAHLC"
         | "MACD"
@@ -353,6 +380,7 @@ declare module "@barchart/chart-lib" {
         | "BBANDS"
         | "BWIDTH"
         | "BPERC"
+        | "BSQUEEZE"
         | "OBVOL"
         | "ATR"
         | "ADX"
@@ -431,7 +459,13 @@ declare module "@barchart/chart-lib" {
         | "VSTOP"
         | "SUPTR"
         | "ICHCLD"
-        | "VWAP";
+        | "VWAP"
+        | "VOIN"
+        | "DIFA"
+        | "DOSC"
+        | "MARIB"
+        | "HASMO"
+        | "TTMSQZ";
 
     type PlotType =
         | "Symbol"
@@ -726,13 +760,14 @@ declare module "@barchart/chart-lib" {
         CH_ZOOMCHANGED: string;
         CH_ALL_DATA_PROJECTED: string;
         CH_API_ACTIONS_RECEIVED: string;
+        DF_ALL: string;
+        DF_STREAMRECONNECTED: string;
         TS_ALL: string;
         TS_LOADING: string;
         TS_MANYCHANGED: string;
         TS_DATAPOINTADDED: string;
         TS_DATAPOINTCHANGED: string;
         TS_EVENTSCHANGED: string;
-        TS_LAST_POINT_UPDATED: string;
         MD_ALL: string;
         MD_CHANGED: string;
         RT_ALL: string;
@@ -770,6 +805,7 @@ declare module "@barchart/chart-lib" {
                 typeName: string;
                 name: string;
                 description?: string;
+                exchange?: string;
                 error?: string;
                 id: string;
                 events: {
@@ -795,7 +831,14 @@ declare module "@barchart/chart-lib" {
 
     const Topics: ITopics;
 
-    export type FeedMode = "Unspecified" | "GBE" | "cmdtyView" | "DemoSite" | "InternalFeed" | "Widget" | "FreeWidget";
+    export type FeedMode =
+        | "Unspecified"
+        | "GBE"
+        | "cmdtyView"
+        | "DemoSite"
+        | "InternalFeed"
+        | "Widget"
+        | "FreeWidget";
 
     type BaseUrl = {
         instruments: string;
@@ -864,6 +907,7 @@ declare module "@barchart/chart-lib" {
         baseUrl?: BaseUrl;
         overrides?: Overrides;
         noDataText?: string;
+        useAllFieldsForComparison?: boolean;
         credentials?: ICredentials;
         apiKey?: string;
         fetch?(kind: UrlKind, relativeUrl: string): Promise<string>;
@@ -1056,10 +1100,17 @@ declare module "@barchart/chart-lib" {
         context: { period: string } | { range: { from?: number; to?: number } } | { density: number };
     }
 
+    export interface CrosshairProperties {
+        color: string;
+        dashStyle?: DashStyle;
+    }
+
     export interface CrosshairAccessor {
         id: string;
         context: {
             crosshair: Orientation;
+            horizontal?: CrosshairProperties;
+            vertical?: CrosshairProperties;
         };
     }
 
@@ -1216,6 +1267,11 @@ declare module "@barchart/chart-lib" {
                 gridLinesStyle?: DashStyle;
                 textColor?: string;
                 crosshairColor?: string;
+            };
+            fontSize?: {
+                chart?: number;
+                xAxis?: number;
+                yAxis?: number;
             };
         };
     }
@@ -1727,7 +1783,7 @@ declare module "@barchart/chart-lib" {
 
     /** Built-in feed for mini chart widgets, no streaming data but does cache timeseries data. */
     class MiniWidgetDataFeed extends BaseDataFeed {}
-    
+
     /** Built-in feed, use if you have a contract with Barchart to use our data. This one _does_ provide streaming data. */
     class MarketDataFeed extends BaseDataFeed {
         connection?: any;
@@ -1993,7 +2049,7 @@ declare module "@barchart/chart-lib" {
          * @default false
          */
         showPrevious?: boolean;
-        type: "symbol";
+        type: "Symbol";
         /** The main plot is the central focal point of the chart - by default, all studies are based off of the main plot's time-series data, for example.
          * This is `false` for all "secondary" plots when we're comparing multiple plots together.
          * @default false
@@ -2095,6 +2151,7 @@ declare module "@barchart/chart-lib" {
 
     export interface SymbolPlot extends Plot {
         main: boolean;
+        inputs?: StudyInput[];
     }
 
     export interface FundamentalPlot extends Plot {
@@ -2148,16 +2205,6 @@ declare module "@barchart/chart-lib" {
         b: number;
         a: number;
     }
-
-    interface INetwork {
-        isPrivateAddress(host: string): boolean;
-        isRunningLocally(): boolean;
-        getThisDomainName(): string;
-        buildURL(host: string, query: object): string;
-        buildCheckURL(qps1: string?, qps2: string?): string;
-    }
-    // reserved for internal use
-    export const Network: INetwork;
 
     export {
         initFeed,
